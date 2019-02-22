@@ -1,0 +1,283 @@
+addNewSkill FOR ADMIN --------------------------
+
+CREATE PROCEDURE stpAddNewSkill @SkillName nvarchar(50), @Category nvarchar(50)
+AS
+BEGIN 
+INSERT INTO Skills (Name, Category) VALUES(@SkillName, @Category)
+END 
+GO
+
+--EXEC stpAddNewSkill @SkillName = 'Ruby', @Category = 'BackEnd'
+
+
+///////////////////////////////////////////////////////////////
+
+addSkillById FOR EMPLOYEE
+
+CREATE PROCEDURE addSkillById @SkillId INT, @EmployeeId INT
+AS
+BEGIN
+INSERT INTO TechStack (SkillId, Employeeid) VALUES (@SkillId, @EmployeeId)
+EXEC getSkillById @EmployeeId = @EmployeeId
+END
+GO
+
+--EXEC addSkillById @SkillId = 6, @EmployeeId = 3
+
+
+///////////////////////////////////////////////////////////////
+
+createCredentials FOR NEW EMPLOYEE IN ADMIN PAGE
+
+ALTER PROCEDURE createCredentials @Email nvarchar(50), @Password nvarchar(100), @Status nvarchar(10), @Role nvarchar(50)
+AS
+BEGIN TRAN
+BEGIN TRY
+INSERT INTO [login] VALUES (@Email, @Password, @Status, @Role)
+insert into Employee(Designation, Email, Status) values('Employee', 'arpit.dave@cygrp.com', 'Active')
+COMMIT TRAN
+SELECT * FROM [login]
+SELECT * FROM Employee
+END TRY
+BEGIN CATCH
+ROLLBACK TRAN
+END CATCH
+GO
+
+--EXEC createCredentials 'arpit.dave@cygrp.com', 'arpit', 'Active', 'Employee'S
+
+///////////////////////////////////////////////////////////////
+
+
+createNewEmployee  IN ADMIN PAGE
+
+ALTER PROCEDURE createNewEmployee 
+		@FirstName varchar(50),
+		@LastName varchar(50),
+		@Designation varchar(50),
+		@Email varchar(50),
+		@Location varchar(50),
+		@DateOfJoining date,
+		@DateOfBirth date,
+		@PastExperience int,
+		@Department varchar(50),
+		@Status varchar(10),
+		@ProfilPicUrl varchar(255)
+AS
+BEGIN
+insert into Employee values(@FirstName, @LastName, @Designation, @Email, @Location, @DateOfJoining, @DateOfBirth, @PastExperience, @Department, @Status, @ProfilPicUrl) 
+SELECT * FROM Employee
+END
+GO
+
+--EXEC createNewEmployee 'Taarak', 'Dhingra', 'Intern', 'taarak.dhingra@cygrp.com', 'Noida', '2019-01-07', '1996-02-15', 1, 'Technical', 'Active', 'Url' 
+
+///////////////////////////////////////////////////////////////
+
+getAllSkills   IN ADMIN PAGE (LIST OF SKILLS)
+
+
+CREATE PROCEDURE stpAllSkills
+AS
+BEGIN 
+SELECT * FROM Skills
+END 
+GO
+
+--EXEC stpAllSkills
+
+///////////////////////////////////////////////////////////////
+
+getEmployeeDetailsById   IN EMPLOYEE PAGE
+
+CREATE PROCEDURE getEmployeeDetailsById @EmployeeId int
+AS
+BEGIN
+SELECT * FROM Employee e
+WHERE e.EmployeeId = @EmployeeId
+END
+GO
+
+--EXEC getEmployeeDetailsById @EmployeeId = 6
+
+///////////////////////////////////////////////////////////////
+
+
+getSkillById  IN EMPLOYEE PAGE
+
+
+CREATE PROCEDURE getSkillById @EmployeeId INT
+AS
+BEGIN
+SELECT t.SerialNo, e.EmployeeId, s.[Name]
+FROM ((TechStack t
+INNER JOIN Employee e
+ON t.Employeeid = e.EmployeeId) INNER JOIN Skills s ON t.SkillId = s.Id)
+WHERE e.EmployeeId = @EmployeeId
+END
+GO
+
+--EXEC getSkillById @EmployeeId = 3
+
+///////////////////////////////////////////////////////////////
+
+softDeleteEmployee      FOR ADMIN PAGE ONLY
+
+ALTER PROCEDURE softDeleteEmployee @EmployeeId int
+AS
+BEGIN TRAN
+BEGIN TRY
+declare @x nvarchar(50)
+set @x = (select e.Email from Employee e inner join Login l on e.Email = l.Email where EmployeeId = @EmployeeId )
+print @x
+UPDATE Employee SET [Status] = 'Inactive' WHERE EmployeeId = @EmployeeId
+UPDATE [Login] SET [Status] = 'Inactive' WHERE Email = @x
+SELECT * FROM Employee WHERE EmployeeId = @EmployeeId
+SELECT * FROM [Login] WHERE Email = @x
+COMMIT
+END TRY
+BEGIN CATCH
+ROLLBACK TRAN
+END CATCH
+GO
+
+--EXEC softDeleteEmployee 17
+
+///////////////////////////////////////////////////////////////
+
+updateEmployeeDetailsById   FOR ADMIN 
+
+
+CREATE PROCEDURE updateEmployeeDetailsById
+		@EmployeeId int, 
+		@FirstName varchar(50),
+		@LastName varchar(50),
+		@Designation varchar(50),
+		@Email varchar(50),
+		@Location varchar(50),
+		@DateOfJoining date,
+		@DateOfBirth date,
+		@PastExperience int,
+		@Department varchar(50),
+		@Status varchar(10),
+		@ProfilPicUrl varchar(255)
+AS
+BEGIN
+UPDATE Employee
+SET FirstName = @FirstName, LastName = @LastName, Designation = @Designation,Email = @Email, [Location] = @Location, DateOfJoining = @DateOfJoining, DateOfBirth = @DateOfBirth, PastExperience = @PastExperience, Department = @Department, [Status] = @Status, ProfilepicUrl = @ProfilPicUrl
+WHERE EmployeeId = @EmployeeId
+SELECT * FROM Employee 
+END
+GO
+
+
+--EXEC updateEmployeeDetailsById 6,'Taarak', 'Dhingra', 'Intern', 'taarak.dhingra@cygrp.com', 'Noida', '2019-01-07', '1996-02-15', 1, 'Technical', 'Active', 'Url' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

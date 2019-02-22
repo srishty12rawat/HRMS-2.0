@@ -1,0 +1,8 @@
+CREATE PROCEDURE stpAllSkills
+AS
+BEGIN 
+SELECT * FROM Skills
+END 
+GO
+
+--EXEC stpAllSkills
