@@ -46,5 +46,8 @@ td, th{
     float: right;
     margin-bottom: 10px;
 }
+body {
+    overflow-x: hidden;
+}
 
 
